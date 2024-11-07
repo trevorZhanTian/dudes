@@ -14,12 +14,31 @@ class Dude {
   public void update(){
     vel.add(acc);
     pos.add(vel);
+    boundaryTest();
   }
   
   public void display(){
     stroke(255);
     strokeWeight(diam);
     point(pos.x, pos.y);
+  }
+  
+  public void boundaryTest(){
+    if(pos.x<diam*.5){//Left Boundary
+      pos.x = diam*.5;
+      vel.x *= -1;
+    }else if(pos.x>width-diam*.5){//Right Boundary
+      pos.x = width-diam*.5;
+      vel.x *= -1;
+    }
+    
+    if(pos.y<diam*.5){//Top Boundary
+      pos.y = diam*.5;
+      vel.y *= -1;
+    }else if(pos.y>height-diam*.5){//Bottom Boundary
+      pos.y = height-diam*.5;
+      vel.y *= -1;
+    }
   }
   
   
