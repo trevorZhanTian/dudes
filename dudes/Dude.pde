@@ -4,6 +4,7 @@ class Dude {
   boolean isRunner;
   boolean isCaught;
   
+  //Dude Constructor
   public Dude(boolean isRunner) {
     this.isRunner = isRunner;
     this.isCaught = false;
@@ -11,6 +12,7 @@ class Dude {
     vel = PVector.random2D();
     acc = new PVector();
     
+    //Uses a boolean variable to differentiate to type of dudes
     if (isRunner) {
       diam = random(4, 6);
       maxSpeed = 2;
@@ -19,8 +21,10 @@ class Dude {
       maxSpeed = 4;
     }
   }
+
   
-  public void update() {
+  public void update() {  
+    // Determine and apply behavior to different dudes
     if (isRunner && !isCaught) {
       PVector escape = avoidNearestChaser();
       escape.mult(1.2);
@@ -31,7 +35,7 @@ class Dude {
       acc.add(chase);
     }
     
-    
+    // Only move if dude is not caught
     if (!isCaught || !isRunner) {
       vel.add(acc);
       vel.limit(maxSpeed);
@@ -40,6 +44,7 @@ class Dude {
       boundaryTest();
     }
   }
+ 
   
   private void checkIfCaught() {
     for (int i = 0; i < chaseDudes.length; i++) {
@@ -49,14 +54,23 @@ class Dude {
         isCaught = true;
         vel.mult(0);
         acc.mult(0);
-        break;
       }
     }
   }
   
+  
   private PVector chaseNearestRunner() {
+    Dude nearestRunner = findNearestRunner();
+    if (nearestRunner == null) {
+      return new PVector(0, 0);
+    }
+    return calculateChaseForce(nearestRunner);
+  }
+
+
+  // Find the nearest uncaught runner
+  private Dude findNearestRunner() {
     float minDist = Float.POSITIVE_INFINITY;
-    PVector target = new PVector();
     Dude nearestRunner = null;
     
     for (int i = 0; i < runDudes.length; i++) {
@@ -65,17 +79,17 @@ class Dude {
         float d = PVector.dist(pos, runner.pos);
         if (d < minDist) {
           minDist = d;
-          target = runner.pos.copy();
           nearestRunner = runner;
         }
       }
     }
-    
-    if (nearestRunner == null) {
-      return new PVector(0, 0);
-    }
-    
-    PVector desired = PVector.sub(target, pos);
+    return nearestRunner;
+  }
+
+
+  // Calculate steering force towards target
+  private PVector calculateChaseForce(Dude target) {
+    PVector desired = PVector.sub(target.pos, pos);
     desired.normalize();
     desired.mult(maxSpeed);
     PVector steer = PVector.sub(desired, vel);
@@ -83,6 +97,7 @@ class Dude {
     return steer;
   }
   
+   // Calculate the force of runners if encountering a chaser within certain distance
   private PVector avoidNearestChaser() {
     float detectionRadius = 100;
     PVector escape = new PVector();
@@ -96,6 +111,11 @@ class Dude {
       }
     }
     
+    return finalizeEscapeForce(escape);
+  }
+  
+    
+  private PVector finalizeEscapeForce(PVector escape) {
     if (escape.mag() > 0) {
       escape.normalize();
       escape.mult(maxSpeed);
@@ -106,7 +126,9 @@ class Dude {
     return new PVector(0, 0);
   }
   
+  
   public void display() {
+    // Set color based on dudes' state
     if (isRunner) {
       if (isCaught) {
         stroke(color(128, 128, 128)); 
@@ -119,6 +141,7 @@ class Dude {
     strokeWeight(diam);
     point(pos.x, pos.y);
   }
+  
   
   public void boundaryTest() {
     if (pos.x < diam*.5) {

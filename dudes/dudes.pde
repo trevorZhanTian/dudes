@@ -1,9 +1,9 @@
-int runAmt = 100;
-int chaseAmt = 2;
+int runAmt = 100;// Number of runners
+int chaseAmt = 2;// Number of chasers
 Dude[] runDudes;
 Dude[] chaseDudes;
-float maxSpeed = 2;
-float maxForce = 0.1;
+float maxSpeed = 2;// Ensuring the dudes don't keep accelerating
+float maxForce = 0.1;// Setting a max force for attraction of runner to chaser so the motion is smoother
 float catchDistance = 5;
 
 void setup() {
