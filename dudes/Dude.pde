@@ -2,57 +2,84 @@ class Dude {
   private float diam;
   PVector pos, vel, acc;
   boolean isRunner;
+  boolean isCaught;
   
   public Dude(boolean isRunner) {
     this.isRunner = isRunner;
+    this.isCaught = false;
     pos = new PVector(random(width), random(height));
     vel = PVector.random2D();
     acc = new PVector();
     
     if (isRunner) {
-      diam = random(2, 4);
+      diam = random(4, 6);
       maxSpeed = 2;
     } else {
-      diam = random(4, 6);
-      maxSpeed = 3;
+      diam = random(6, 8);
+      maxSpeed = 4;
     }
   }
   
   public void update() {
-    if (isRunner) {
+    if (isRunner && !isCaught) {
       PVector escape = avoidNearestChaser();
       escape.mult(1.2);
       acc.add(escape);
-    } else {
+      checkIfCaught();
+    } else if (!isRunner) {
       PVector chase = chaseNearestRunner();
       acc.add(chase);
     }
     
-    vel.add(acc);
-    vel.limit(maxSpeed);
-    pos.add(vel);
-    acc.mult(0);
     
-    boundaryTest();
+    if (!isCaught || !isRunner) {
+      vel.add(acc);
+      vel.limit(maxSpeed);
+      pos.add(vel);
+      acc.mult(0);
+      boundaryTest();
+    }
+  }
+  
+  private void checkIfCaught() {
+    for (int i = 0; i < chaseDudes.length; i++) {
+      Dude chaser = chaseDudes[i];
+      float d = PVector.dist(pos, chaser.pos);
+      if (d < catchDistance) {
+        isCaught = true;
+        vel.mult(0);
+        acc.mult(0);
+        break;
+      }
+    }
   }
   
   private PVector chaseNearestRunner() {
     float minDist = Float.POSITIVE_INFINITY;
     PVector target = new PVector();
+    Dude nearestRunner = null;
     
     for (int i = 0; i < runDudes.length; i++) {
       Dude runner = runDudes[i];
-      float d = PVector.dist(pos, runner.pos);
-      if (d < minDist) {
-        minDist = d;
-        target = runner.pos.copy();
+      if (!runner.isCaught) {
+        float d = PVector.dist(pos, runner.pos);
+        if (d < minDist) {
+          minDist = d;
+          target = runner.pos.copy();
+          nearestRunner = runner;
+        }
       }
+    }
+    
+    if (nearestRunner == null) {
+      return new PVector(0, 0);
     }
     
     PVector desired = PVector.sub(target, pos);
     desired.normalize();
     desired.mult(maxSpeed);
     PVector steer = PVector.sub(desired, vel);
+    steer.limit(maxForce);
     return steer;
   }
   
@@ -73,6 +100,7 @@ class Dude {
       escape.normalize();
       escape.mult(maxSpeed);
       PVector steer = PVector.sub(escape, vel);
+      steer.limit(maxForce);
       return steer;
     }
     return new PVector(0, 0);
@@ -80,9 +108,13 @@ class Dude {
   
   public void display() {
     if (isRunner) {
+      if (isCaught) {
+        stroke(color(128, 128, 128)); 
+      } else {
         stroke(color(100, 255, 100)); 
+      }
     } else {
-        stroke(color(255, 100, 100)); 
+      stroke(color(255, 100, 100)); 
     }
     strokeWeight(diam);
     point(pos.x, pos.y);

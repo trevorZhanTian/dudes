@@ -3,6 +3,8 @@ int chaseAmt = 2;
 Dude[] runDudes;
 Dude[] chaseDudes;
 float maxSpeed = 2;
+float maxForce = 0.1;
+float catchDistance = 5;
 
 void setup() {
   size(720, 720);
