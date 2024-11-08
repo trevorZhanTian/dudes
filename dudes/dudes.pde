@@ -1,24 +1,33 @@
-int amt = 1000;
+int runAmt = 100;
+int chaseAmt = 2;
+Dude[] runDudes;
+Dude[] chaseDudes;
+float maxSpeed = 2;
 
-Dude [] dudes;
-
-void setup(){
+void setup() {
   size(720, 720);
   
-  dudes = new Dude[amt];
-  for(int i=0; i<amt; i++){
-    dudes[i] = new Dude(random(width), random(height));
+  runDudes = new Dude[runAmt];
+  for (int i=0; i<runAmt; i++) {
+    runDudes[i] = new Dude(true);
+  }
+  
+  chaseDudes = new Dude[chaseAmt];
+  for (int i=0; i<chaseAmt; i++) {
+    chaseDudes[i] = new Dude(false);
   }
 }
 
-void draw(){
-  for(int i=0; i<amt; i++){
-    dudes[i].update();
-  }
-  
+void draw() {
   background(0);
-  for(int i=0; i<amt; i++){
-    dudes[i].display();
+  
+  for (int i=0; i<runAmt; i++) {
+    runDudes[i].update();
+    runDudes[i].display();
   }
   
+  for (int i=0; i<chaseAmt; i++) {
+    chaseDudes[i].update();
+    chaseDudes[i].display();
+  }
 }
