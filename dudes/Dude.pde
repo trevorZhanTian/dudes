@@ -36,6 +36,10 @@ class Dude {
     }
     
     // Only move if dude is not caught
+    updateForMovingDudes();
+  }
+  
+  private void updateForMovingDudes(){
     if (!isCaught || !isRunner) {
       vel.add(acc);
       vel.limit(maxSpeed);
@@ -45,7 +49,6 @@ class Dude {
     }
   }
  
-  
   private void checkIfCaught() {
     for (int i = 0; i < chaseDudes.length; i++) {
       Dude chaser = chaseDudes[i];
@@ -144,6 +147,11 @@ class Dude {
   
   
   public void boundaryTest() {
+    verticalBoundaryTest();
+    horizontalBonundaryTest();
+  }
+  
+  private void verticalBoundaryTest() {
     if (pos.x < diam*.5) {
       pos.x = diam*.5;
       vel.x *= -1;
@@ -151,7 +159,9 @@ class Dude {
       pos.x = width-diam*.5;
       vel.x *= -1;
     }
-    
+  }
+  
+  private void horizontalBonundaryTest() {
     if (pos.y < diam*.5) {
       pos.y = diam*.5;
       vel.y *= -1;

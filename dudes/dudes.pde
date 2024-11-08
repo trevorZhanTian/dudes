@@ -1,5 +1,5 @@
 int runAmt = 100;// Number of runners
-int chaseAmt = 2;// Number of chasers
+int chaseAmt = 5;// Number of chasers
 Dude[] runDudes;
 Dude[] chaseDudes;
 float maxSpeed = 2;// Ensuring the dudes don't keep accelerating
